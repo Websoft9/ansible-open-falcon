@@ -34,7 +34,7 @@
 
 open-falcon 程序主体路径 : /data/open-falcon
 
-1. 配置文件:
+##### 配置文件:
 
 falcon-aggregator: /data/open-falcon/aggregator/config/cfg.json
 
@@ -50,7 +50,7 @@ falcon-alarm: /data/open-falcon/alarm/config/cfg.json
 
 falcon-dashboard: /data/open-falcon/dashboard/rrd/config.py  /data/open-falcon/dashboard/gunicorn.conf
 
-日志文件:
+###### 日志文件:
 falcon-aggregator: /var/log/messages
 
 falcon-graph: /var/log/messages
@@ -64,7 +64,7 @@ falcon-api: /var/log/messages
 falcon-alarm: /var/log/messages
 falcon-dashboard: /var/log/messages
 
-端口:(根据需求开发,镜像不需要)
+##### 端口:(根据需求开发,镜像不需要)
 
 
 
@@ -89,7 +89,8 @@ falcon-dashboard: /var/log/messages
 |9912  |falcon-alarm|
 |8081  |falcon-dashboard|
 
-命令行工具:
+##### 命令行工具:
+
 1. `/data/open-falcon/open-falcon`
    ```
    Usage:
@@ -112,7 +113,7 @@ falcon-dashboard: /var/log/messages
 
    ```
 
-####服务 
+#### 服务 
 ```
 systemctl restart falcon-aggregator
 systemctl restart falcon-graph
