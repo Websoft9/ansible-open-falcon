@@ -1,0 +1,15 @@
+[Unit]
+Description=Open Falcon Api Service
+
+[Service]
+ExecStart=/data/open-falcon/api/bin/falcon-api -c /data/open-falcon/api/config/cfg.json
+Type=simple
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=falcon-api
+Restart=on-failure
+RestartSec=15
+
+[Install]
+WantedBy=multi-user.target
+

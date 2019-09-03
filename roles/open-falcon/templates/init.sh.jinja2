@@ -1,0 +1,40 @@
+#!/bin/bash
+
+old_password=$(cat /credentials/password.txt | awk 'NR==2' |awk -F ":" '{print $2}')
+
+new_password=$(pwgen -cns  8 1)
+
+
+systemctl restart mysql
+
+mysqladmin -uroot -p${old_password} -h localhost password $new_password
+mysqladmin -uroot -p${old_password} -h 127.0.0.1 password $new_password
+
+sed -i "s/$old_password/$new_password/" /credentials/password.txt
+
+sed -i "s/$old_password/$new_password/" /data/open-falcon/aggregator/config/cfg.json
+sed -i "s/$old_password/$new_password/" /data/open-falcon/graph/config/cfg.json
+sed -i "s/$old_password/$new_password/" /data/open-falcon/hbs/config/cfg.json
+sed -i "s/$old_password/$new_password/" /data/open-falcon/nodata/config/cfg.json
+sed -i "s/$old_password/$new_password/" /data/open-falcon/api/config/cfg.json
+sed -i "s/$old_password/$new_password/" /data/open-falcon/alarm/config/cfg.json
+sed -i "s/$old_password/$new_password/" /data/open-falcon/dashboard/rrd/config.py
+
+
+systemctl restart falcon-aggregator
+systemctl restart falcon-graph
+systemctl restart falcon-hbs
+systemctl restart falcon-nodata
+systemctl restart falcon-api
+systemctl restart falcon-alarm
+systemctl restart falcon-dashboard
+systemctl restart falcon-judge
+systemctl restart falcon-transfer
+systemctl restart falcon-agent
+systemctl restart falcon-gateway
+
+
+sed -i 's/\/root\/init.sh//g' /etc/rc.local
+
+rm -rf /root/init.sh
+

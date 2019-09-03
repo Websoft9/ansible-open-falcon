@@ -1,0 +1,15 @@
+[Unit]
+Description=Open Falcon Dashboard Service
+
+[Service]
+ExecStart=/data/open-falcon/dashboard/env/bin/gunicorn -c gunicorn.conf wsgi:app
+WorkingDirectory=/data/open-falcon/dashboard/
+Type=simple
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=falcon-dashboard
+Restart=on-failure
+RestartSec=15
+
+[Install]
+WantedBy=multi-user.target

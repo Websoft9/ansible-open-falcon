@@ -1,0 +1,15 @@
+[Unit]
+Description=Open Falcon Gateway Service
+
+[Service]
+ExecStart=/data/open-falcon/gateway/bin/falcon-gateway -c /data/open-falcon/gateway/config/cfg.json
+Type=simple
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=falcon-gateway
+Restart=on-failure
+RestartSec=15
+
+[Install]
+WantedBy=multi-user.target
+

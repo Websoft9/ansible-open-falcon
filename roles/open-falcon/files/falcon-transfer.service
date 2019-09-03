@@ -1,0 +1,14 @@
+[Unit]
+Description=Open Falcon Transfer Service
+
+[Service]
+ExecStart=/data/open-falcon/transfer/bin/falcon-transfer -c /data/open-falcon/transfer/config/cfg.json
+Type=simple
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=falcon-transfer
+Restart=on-failure
+RestartSec=15
+
+[Install]
+WantedBy=multi-user.target

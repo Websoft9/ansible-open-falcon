@@ -1,0 +1,159 @@
+- name: Install the Dependency Pack
+  yum:
+    name: [python-virtualenv,python-devel,openldap-devel,mysql-devel,"@Development tools"]
+
+- name: Git Initialize the Structure
+  git:
+    repo: https://github.com/open-falcon/falcon-plus.git 
+    dest: /root/falcon-plus
+
+- name: Get MySQL root Default Password
+  shell: cat /credentials/password.txt | awk 'NR==2' |awk -F ":" '{print $2}'
+  register: mysql_password 
+
+- name: Initialize the Structure of MySQL List
+  mysql_db:
+    login_user: root
+    login_password: '{{mysql_password.stdout}}'
+    state: import
+    name: all
+    target: /root/falcon-plus/scripts/mysql/db_schema/{{item}}
+  with_items:
+    - 1_uic-db-schema.sql
+    - 2_portal-db-schema.sql
+    - 3_dashboard-db-schema.sql
+    - 4_graph-db-schema.sql
+    - 5_alarms-db-schema.sql
+
+- name: Delete Initialize the Structure
+  shell: rm -rf /root/falcon-plus
+
+- name: Create Dir
+  file: 
+    path: /data/open-falcon
+    state: directory
+
+- name: Download the Compiled Binary 
+  unarchive:
+    src: https://github.com/open-falcon/falcon-plus/releases/download/{{falcon_ver}}/open-falcon-{{falcon_ver}}.tar.gz
+    dest: /data/open-falcon
+    remote_src: yes
+
+
+- name: modify configure
+  shell: grep -Ilr 3306  ./ | xargs -n1 -- sed -i "s/root:/root:{{mysql_password.stdout}}/g"
+  args:
+    chdir: /data/open-falcon/
+
+- name: config open-falcon service
+  copy:
+    src: falcon-{{item}}.service
+    dest: /lib/systemd/system
+  with_items:
+    - graph
+    - hbs
+    - judge
+    - transfer
+    - nodata
+    - aggregator
+    - agent
+    - gateway
+    - api
+    - alarm
+
+- name: Start open-falcon
+  service:
+    name: falcon-{{item}}.service
+    state: started
+    enabled: yes
+  with_items:
+    - graph
+    - hbs
+    - judge
+    - transfer
+    - nodata
+    - aggregator
+    - agent
+    - gateway
+    - api
+    - alarm
+
+
+
+### 前端部分
+
+- name: Git dashboard
+  git:
+    repo: https://github.com/open-falcon/dashboard.git
+    dest: /data/open-falcon/dashboard
+
+
+- name: Create Python env
+  shell: virtualenv ./env
+  args:
+    chdir: /data/open-falcon/dashboard
+
+
+- name: Install the Dependency Pack for dashboard
+  pip:
+    requirements: /data/open-falcon/dashboard/pip_requirements.txt
+    virtualenv: /data/open-falcon/dashboard/env
+    extra_args: -i https://pypi.douban.com/simple
+
+- name: Update Werkzeug
+  pip:
+    name: Werkzeug==0.15.5
+    virtualenv: /data/open-falcon/dashboard/env
+    extra_args: -i https://pypi.douban.com/simple
+
+- name: config falcon-dashboard 
+  template:
+    src: config.py.jinja2
+    dest: /data/open-falcon/dashboard/rrd/config.py
+    mode: 750
+
+
+- name: config falcon-dashboard service
+  copy:
+    src: falcon-dashboard.service
+    dest: /lib/systemd/system
+
+
+- name: Start falcon-dashboard
+  service:
+    name: falcon-dashboard
+    state: started
+    enabled: yes
+
+
+- name: set reverse porxy
+  copy: 
+    src: default
+    dest: /etc/nginx/conf.d/default.conf
+
+- name: restart nginx
+  service: name=nginx state=restarted enabled=yes
+
+- name: Write Databases Password
+  template:
+    src: password.txt.jinja2
+    dest: /credentials/password.txt
+    mode: 644
+
+- name: Databases Random Password
+  template: 
+    src: init.sh.jinja2
+    dest: /root/init.sh
+    mode: 0750
+
+- name: Setting Startup
+  lineinfile:
+    path: /etc/rc.local
+    regexp: '/root/init.sh'
+    line: '/root/init.sh'
+    mode: 0750
+
+- name: change rc.local
+  file:
+    path: /etc/rc.d/rc.local
+    mode: 750
