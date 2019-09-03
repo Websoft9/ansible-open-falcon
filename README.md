@@ -34,7 +34,7 @@
 
 open-falcon 程序主体路径 : /data/open-falcon
 
-配置文件:
+1. 配置文件:
 
 falcon-aggregator: /data/open-falcon/aggregator/config/cfg.json
 
@@ -64,27 +64,29 @@ falcon-api: /var/log/messages
 falcon-alarm: /var/log/messages
 falcon-dashboard: /var/log/messages
 
-
 端口:(根据需求开发,镜像不需要)
+
+
+
 |端口|服务|
 |--|--|
-|16060 |falcon-gateway| 
-|4444  |falcon-transfe| 
-|6080  |falcon-judge|   
-|18433 |falcon-gateway| 
-|6081  |falcon-judge|   
-|1988  |falcon-agent|   
-|6055  |falcon-aggrega| 
-|6090  |falcon-nodata|  
-|14444 |falcon-gateway| 
-|6060  |falcon-transfe| 
-|6030  |falcon-hbs|     
-|6031  |falcon-hbs|     
-|8080  |falcon-api|     
-|8433  |falcon-transfe| 
-|6070  |falcon-graph|   
-|6071  |falcon-graph|   
-|9912  |falcon-alarm|   
+|16060 |falcon-gateway|
+|4444  |falcon-transfe|
+|6080  |falcon-judge|
+|18433 |falcon-gateway|
+|6081  |falcon-judge|
+|1988  |falcon-agent|
+|6055  |falcon-aggrega|
+|6090  |falcon-nodata|
+|14444 |falcon-gateway|
+|6060  |falcon-transfe|
+|6030  |falcon-hbs|
+|6031  |falcon-hbs|
+|8080  |falcon-api|
+|8433  |falcon-transfe|
+|6070  |falcon-graph|
+|6071  |falcon-graph|
+|9912  |falcon-alarm|
 |8081  |falcon-dashboard|
 
 命令行工具:
